@@ -1,6 +1,7 @@
 from pysolarmanv5 import PySolarmanV5, V5FrameError
 import umodbus.exceptions
 import struct
+import os
 
 stick_logger_ip = os.environ.get("DEYE_LOGGER_IP",'')
 stick_logger_serial = int(os.environ.get("DEYE_LOGGER_SERIAL",''))
