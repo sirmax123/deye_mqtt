@@ -1,0 +1,18 @@
+{
+  "device": {
+    "identifiers": [
+      "inverter"
+    ],
+    "manufacturer": "Deya LTD",
+    "model": "SUN-8K-SG01LP1-EU",
+    "name": "Hybryd Inverter",
+    "serial_number": "123456789"
+  },
+  "name": "Grid connection",
+  "device_class": "connectivity",
+  "enabled_by_default": true,
+  "object_id": "invertor_grid_connection",
+  "state_topic": "homeassistant/sensor/invertor/state",
+  "unique_id": "invertor_grid_connection",
+  "value_template": "{{ value_json.grid_connection }}"
+}

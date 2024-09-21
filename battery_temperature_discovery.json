@@ -1,0 +1,19 @@
+{
+  "device": {
+    "identifiers": [
+      "inverter"
+    ],
+    "manufacturer": "Deya LTD",
+    "model": "SUN-8K-SG01LP1-EU",
+    "name": "Hybryd Inverter"
+  },
+  "name": "Battery temperature",
+  "device_class": "temperature",
+  "enabled_by_default": true,
+  "object_id": "inverter_battery_temperature",
+  "state_class": "measurement",
+  "state_topic": "homeassistant/sensor/invertor/state",
+  "unique_id": "invertor_battery_temperature",
+  "unit_of_measurement": "°C",
+  "value_template": "{{ value_json.battery_temperature }}"
+}
