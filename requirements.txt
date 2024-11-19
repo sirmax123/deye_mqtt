@@ -1,2 +1,5 @@
 pysolarmanv5==3.0.4
 paho-mqtt==2.1.0
+prometheus_client==0.21.0
+pyserial==3.5
+uModbus==1.0.4

@@ -1,0 +1,35 @@
+---
+version: "3"
+services:
+    # Other HA containes here, depends on your setup
+    deye_exporter:
+        container_name: "deye_exporter"
+        build: .
+        image: "deye-exporter"
+        ports:
+            - "8181:8181"
+        environment:
+            TZ: "Europe/Kyiv"
+            DEYE_LOGGER_SERIAL: "1234567890"
+            DEYE_LOGGER_IP: "192.168.1.10"
+            DEBUG: 1
+            MQTT_HOST: "mqtt.home"
+            MQTT_PASSWORD: "homeassistant"
+            MQTT_USERNAME: "homeassistant"
+            MQTT_TOPIC: 'homeassistant/sensor/inverter/state' # Топик должен совпадать с тем что настроен в HA
+            HTTP_PORT: "8181"
+            HTTP_HOST: '0.0.0.0'
+#        logging:
+#            driver: "none"
+        logging:
+          driver: "json-file"
+          options:
+            max-size: "1k"
+            max-file: "10"
+        restart: "always"
+        #network_mode: "host"
+        privileged: false
+        command: "/deye_exporter/deye_exporter.py"
+# Зависимости по желанию - но для работы с MQTT лучше запускать после брокера
+#        depends_on:
+#            - mosquitto

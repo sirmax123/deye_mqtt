@@ -1,0 +1,18 @@
+---
+sensor:
+  device:
+    identifiers:
+      - inverter
+    manufacturer: "Deya LTD"
+    model: "SUN-6K-SG03LP1-EU"
+    name: "Hybryd Inverter"
+    serial_number: "123456789"
+  name: "Grid Power"
+  device_class: "power"
+  enabled_by_default: true
+  object_id: "inverter_grid_power"
+  state_class: "measurement"
+  state_topic: "homeassistant/sensor/inverter/state"
+  unique_id: "inverter_grid_power"
+  unit_of_measurement: "W"
+  value_template: '{{ value_json.grid_power }}'

@@ -133,7 +133,9 @@ def reg_to_value(regs):
     }
     err = []
     off = 0
+    print(regs)
     for b16 in regs:
+        print("b16 {} ".format(b16))
         for bit in range(16):
             msk = 1 << bit
             if msk & b16:
@@ -147,20 +149,33 @@ def main():
     modbus = PySolarmanV5(
         stick_logger_ip, stick_logger_serial, port=8899, mb_slave_id=1, verbose=False
         )
+    res_all = []
+    res_all = res_all + modbus.read_holding_registers(register_addr=0,  quantity=125)
+    res_all = res_all + modbus.read_holding_registers(register_addr=125, quantity=125)
+    res_all = res_all + modbus.read_holding_registers(register_addr=250, quantity=125)
+#    res_all = res_all + modbus.read_holding_registers(register_addr=375, quantity=125)
 
+    print(res_all)
     for key, val in registers.items():
-        res = modbus.read_holding_registers(register_addr=val['id'], quantity=1)
+        res = res_all[val['id']:val['id']+1]
+        print("RAW DATA FOR {} {}".format(key, res))
+        units = val['units']
         if key == 'battery_temperature':
-            print(f'{key}: {res[0]*val['scale']-100} {val['units']}')
+            res1 = res[0]*val['scale']-100
+            print(f'{key}: {res1} {units}')
         else:
-            print(f'{key}: {res[0]*val['scale']} {val['units']}')
+            res1 = res[0]*val['scale']
+            print(f'{key}: {res1} {units}')
 
     res = modbus.read_holding_registers(register_addr=59, quantity=1)
-    print(f'Overall state: {inverter_state[res[0]]}') 
+    print(f'Overall state: {inverter_state[res[0]]}')
+    print(res)
     res = modbus.read_holding_registers(register_addr=103, quantity=4)
-    print(f'Fault state: {res} data: {reg_to_value(res)}') 
+    print(f'Fault state: {res} data: {reg_to_value(res)}')
+    print(res)
     res = modbus.read_holding_registers(register_addr=194, quantity=1)
     print(f'Connection to grid: {grid_connection_status[res[0]]}')
+    print(res)
 
 
 if __name__ == "__main__":

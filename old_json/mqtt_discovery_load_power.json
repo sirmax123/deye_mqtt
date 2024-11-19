@@ -4,18 +4,18 @@
       "inverter"
     ],
     "manufacturer": "Deya LTD",
-    "model": "SUN-8K-SG01LP1-EU",
+    "model": "SUN-6K-SG03LP1-EU",
     "name": "Hybryd Inverter",
     "serial_number": "123456789"
   },
-  "name": "Grid power",
+  "name": "Load power",
   "device_class": "power",
   "enabled_by_default": true,
-  "object_id": "invertor_grid_power",
+  "object_id": "invertor_load_power",
   "state_class": "measurement",
   "state_topic": "homeassistant/sensor/invertor/state",
-  "unique_id": "invertor_grid_power",
+  "unique_id": "invertor_load_power",
   "unit_of_measurement": "W",
-  "value_template": "{{ value_json.grid_power }}"
+  "value_template": "{{ value_json.load_power }}"
 }
 

@@ -4,18 +4,18 @@
       "inverter"
     ],
     "manufacturer": "Deya LTD",
-    "model": "SUN-8K-SG01LP1-EU",
+    "model": "SUN-6K-SG03LP1-EU",
     "name": "Hybryd Inverter",
     "serial_number": "123456789"
   },
-  "name": "Battery charge limit",
-  "device_class": "current",
+  "name": "Battery voltage",
+  "device_class": "voltage",
   "enabled_by_default": true,
-  "object_id": "battery_charge_limit",
+  "object_id": "invertor_battery_voltage",
   "state_class": "measurement",
   "state_topic": "homeassistant/sensor/invertor/state",
-  "unique_id": "inverter_battery_charge_limit",
-  "unit_of_measurement": "A",
-  "value_template": "{{ value_json.battery_charge_limit }}"
+  "unique_id": "invertor_battery_voltage",
+  "unit_of_measurement": "V",
+  "value_template": "{{ value_json.battery_voltage }}"
 }
 

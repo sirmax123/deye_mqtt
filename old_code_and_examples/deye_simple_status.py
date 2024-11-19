@@ -1,60 +1,10 @@
 from pysolarmanv5 import PySolarmanV5, V5FrameError
 import umodbus.exceptions
 import struct
-import time
-import paho.mqtt.client as mqtt
-import json
 import os
 
 stick_logger_ip = os.environ.get("DEYE_LOGGER_IP",'')
 stick_logger_serial = int(os.environ.get("DEYE_LOGGER_SERIAL",''))
-mqtt_host = os.environ.get("MQTT_HOST",'')
-mqtt_user = os.environ.get("MQTT_USER",'')
-mqtt_password = os.environ.get("MQTT_PASSWORD",'')
-sleep_time = 60
-
-def on_publish(client, userdata, mid, reason_code, properties):
-    # reason_code and properties will only be present in MQTTv5. It's always unset in MQTTv3
-    try:
-        userdata.remove(mid)
-    except KeyError:
-        print("on_publish() is called with a mid not present in unacked_publish")
-        print("This is due to an unavoidable race-condition:")
-        print("* publish() return the mid of the message sent.")
-        print("* mid from publish() is added to unacked_publish by the main thread")
-        print("* on_publish() is called by the loop_start thread")
-        print("While unlikely (because on_publish() will be called after a network round-trip),")
-        print(" this is a race-condition that COULD happen")
-        print("")
-        print("The best solution to avoid race-condition is using the msg_info from publish()")
-        print("We could also try using a list of acknowledged mid rather than removing from pending list,")
-        print("but remember that mid could be re-used !")
-
-
-def send_by_mqtt(topic, message):
-    unacked_publish = set()
-    mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    mqttc.password = mqtt_password
-    mqttc.username = mqtt_user
-    mqttc.host = mqtt_host
-    mqttc.on_publish = on_publish
-
-    mqttc.user_data_set(unacked_publish)
-    mqttc.connect(mqtt_host)
-    mqttc.loop_start()
-
-    # Our application produce some messages
-    msg_info = mqttc.publish(topic, message, qos=1)
-    unacked_publish.add(msg_info.mid)
-    # Wait for all message to be published
-    while len(unacked_publish):
-        time.sleep(0.1)
-    # Due to race-condition described above, the following way to wait for all publish is safer
-    msg_info.wait_for_publish()
-
-    mqttc.disconnect()
-    mqttc.loop_stop()
-
 
 # https://github.com/kellerza/sunsynk/blob/main/src/sunsynk/definitions/single_phase.py
 registers={
@@ -151,8 +101,8 @@ registers={
 }
 
 grid_connection_status = {
-    0: 'OFF',
-    1: 'ON'
+    0: 'Disconnected',
+    1: 'Connected'
     }
 
 inverter_state = {
@@ -183,7 +133,9 @@ def reg_to_value(regs):
     }
     err = []
     off = 0
+    print(regs)
     for b16 in regs:
+        print("b16 {} ".format(b16))
         for bit in range(16):
             msk = 1 << bit
             if msk & b16:
@@ -193,42 +145,33 @@ def reg_to_value(regs):
     return ", ".join(err)
 
 
-def get_data():
+def main():
     modbus = PySolarmanV5(
         stick_logger_ip, stick_logger_serial, port=8899, mb_slave_id=1, verbose=False
         )
-    output = {}
+    res_all = modbus.read_holding_registers(register_addr=0, quantity=125)
+    res_all = res_all + modbus.read_holding_registers(register_addr=125, quantity=125)
+
     for key, val in registers.items():
-        res = modbus.read_holding_registers(register_addr=val['id'], quantity=1)
+        res = modbus.read_holding_registers(register_addr=val['id'], quantity=)
+        units = val['units']
         if key == 'battery_temperature':
-            print(f'{key}: {res[0]*val['scale']-100} {val['units']}')
-            output[key] = res[0]*val['scale']-100
+            res1 = res[0]*val['scale']-100
+            print(f'{key}: {res1} {units}')
         else:
-            if key == 'grid_voltage' or key == 'grid_current':
-                print(f'{key}: {round(res[0]*val['scale'])} {val['units']}')
-                output[key] = round(res[0]*val['scale'])
-            else:
-                print(f'{key}: {res[0]*val['scale']} {val['units']}')
-                output[key] = res[0]*val['scale']
+            res1 = res[0]*val['scale']
+            print(f'{key}: {res1} {units}')
 
     res = modbus.read_holding_registers(register_addr=59, quantity=1)
     print(f'Overall state: {inverter_state[res[0]]}')
-    output['overall_state'] = inverter_state[res[0]]
+    print(res)
     res = modbus.read_holding_registers(register_addr=103, quantity=4)
     print(f'Fault state: {res} data: {reg_to_value(res)}')
+    print(res)
     res = modbus.read_holding_registers(register_addr=194, quantity=1)
     print(f'Connection to grid: {grid_connection_status[res[0]]}')
-    output['grid_connection'] = grid_connection_status[res[0]]
+    print(res)
 
-    message = json.dumps(output)
-    print(message)
-    send_by_mqtt('homeassistant/sensor/invertor/state', message)
-
-def main():
-    print(f'Connecting to {stick_logger_ip} {stick_logger_serial}')
-    while True:
-        get_data()
-        time.sleep(sleep_time)
 
 if __name__ == "__main__":
     main()

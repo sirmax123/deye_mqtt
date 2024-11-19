@@ -1,0 +1,18 @@
+---
+sensor:
+  name: "Battery Voltage"
+  device:
+    identifiers:
+      - inverter
+    manufacturer: "Deya LTD"
+    model: "SUN-6K-SG03LP1-EU"
+    name: "Hybryd Inverter"
+    serial_number: "123456789"
+  device_class: "voltage"
+  enabled_by_default: true
+  object_id: "inverter_battery_voltage"
+  state_class: "measurement"
+  state_topic: "homeassistant/sensor/inverter/state"
+  unique_id: "inverter_battery_voltage"
+  unit_of_measurement: "V"
+  value_template: '{{ value_json.battery_voltage }}'

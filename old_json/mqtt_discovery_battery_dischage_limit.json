@@ -4,18 +4,18 @@
       "inverter"
     ],
     "manufacturer": "Deya LTD",
-    "model": "SUN-8K-SG01LP1-EU",
+    "model": "SUN-6K-SG03LP1-EU",
     "name": "Hybryd Inverter",
     "serial_number": "123456789"
   },
-  "name": "Grid frequency",
-  "device_class": "frequency",
+  "name": "Battery dischage limit",
+  "device_class": "current",
   "enabled_by_default": true,
-  "object_id": "invertor_grid_frequency",
+  "object_id": "battery_dischage_limit",
   "state_class": "measurement",
   "state_topic": "homeassistant/sensor/invertor/state",
-  "unique_id": "invertor_grid_frequency",
-  "unit_of_measurement": "Hz",
-  "value_template": "{{ value_json.grid_frequency }}"
+  "unique_id": "invertor_battery_dischage_limit",
+  "unit_of_measurement": "A",
+  "value_template": "{{ value_json.battery_dischage_limit }}"
 }
 

@@ -1,0 +1,18 @@
+---
+sensor:
+  name: "Battery Charge Limit"
+  device:
+    identifiers:
+      - inverter
+    manufacturer: "Deya LTD"
+    model: "SUN-6K-SG03LP1-EU"
+    name: "Hybryd Inverter"
+    serial_number: "123456789"
+  device_class: "current"
+  enabled_by_default: true
+  object_id: "battery_charge_limit"
+  state_class: "measurement"
+  state_topic: "homeassistant/sensor/inverter/state"
+  unique_id: "inverter_battery_charge_limit"
+  unit_of_measurement: "A"
+  value_template: '{{ value_json.battery_charge_limit }}'
