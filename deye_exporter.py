@@ -229,6 +229,10 @@ def send_data_to_mqtt(collected_data_queue, empty_queue_sleep_seconds, mqtt_send
         except queue.Empty:
             log.debug("[send_data_to_mqtt] Queue is Empty (First data collection or data was not updated), sleeping for {} second(s)".format(empty_queue_sleep_seconds))
             time.sleep(empty_queue_sleep_seconds)
+        except Exception as E:
+            log.debug("[send_data_to_mqtt] Unexpected Exception : {}".format(E))
+            time.sleep(empty_queue_sleep_seconds)
+
     log.error('[send_data_to_mqtt] Finishing thread (this is not expected, it should be an endless loop!!!')
 
 
@@ -284,9 +288,13 @@ class CustomCollector(object):
             self.collected_data = self.exporter_queue.get(block=False)
             log.debug("[collect] Got data from queue: {}".format(self.collected_data))
         except queue.Empty:
-            # Если данных ы очереди нет то работаем с данными полученными на прошлой итерации,
+            # Если данных в очереди нет то работаем с данными полученными на прошлой итерации,
             # если они не устарели
             log.debug("[collect] Queue is Empty, Data is not colleced yet")
+        except Exception as E:
+            # Не ожидаемое исключение
+            log.debug("[collect] Unexpected Exception: {}".format(E))
+            return []
 
         # Проверить есть ли ключ 'data_collected_at' в данных,
         # его может не быть если например он был удален на предыдущем опросе, и за время
